@@ -12,4 +12,5 @@ public class UserEntity {
     private String userZhz;
 
     private String bm;
+    private String userstring;
 }
