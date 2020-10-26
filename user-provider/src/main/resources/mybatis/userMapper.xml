@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.mapper.UserMapper">
+    <!--查询-->
+    <select id="findList" resultType="UserEntity">
+        SELECT u.*,d.bm bm from t_user1 u LEFT join t_drup d on u.user_drup = d.id
+    </select>
+    <!--删除-->
+    <select id="deleteUser" parameterType="Integer">
+         delete from t_user1 where user_id = #{userId}
+    </select>
+    <!--新增-->
+    <insert id="insertUser" parameterType="UserEntity">
+        insert into t_user1 (user_name,user_drup,user_data,user_gw,user_zhz) values (#{userName},#{userDrup},#{userData},#{userGw},#{userZhz});
+    </insert>
+    <!--修改-->
+    <update id="updateUser" parameterType="UserEntity">
+        update t_user1 set user_name = #{userName},user_drup = #{userDrup},user_data = #{userData},user_gw = #{userGw},user_zhz = #{userZhz} where user_id = #{userId}
+    </update>
+    <!--回显-->
+    <select id="huixian" parameterType="Integer" resultType="UserEntity">
+        select * from t_user1 where user_id = #{userId}
+    </select>
+</mapper>

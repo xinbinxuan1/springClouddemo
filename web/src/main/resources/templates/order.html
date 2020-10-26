@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../js/bootstrap/css/bootstrap.min.css">
+    <script src="../js/bootstrap/js/bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="../js/bootstrap/css/bootstrap-table.min.css">
+
+    <script type="text/javascript" src="../vue/vue.min.js"></script>
+    <script type="text/javascript" src="../bootstraps/bootstrap-paginator.js"></script>
+</head>
+<body>
+    <div id="app" >
+        <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" onclick="xiu();"><i class="fa fa-file-o"></i> 新建</button>
+        <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
+        <table class="table table-bordered" v-cloak>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>价格</th>
+                <th>时间</th>
+                <th>支付方式</th>
+                <th>操作</th>
+            </tr>
+            <tr v-for="order in orderList">
+                <td>{{order.orderId}}</td>
+                <td>{{order.orderName}}</td>
+                <td>{{order.orderPrice}}</td>
+                <td>{{order.createData}}</td>
+                <td>{{order.zfName}}</td>
+                <td>
+                    <a class="btn btn-default" data-toggle="modal" data-target="#editModal" @click="xiu(order.orderId)">编辑</a> |
+                    <a class="btn btn-default" @click="shan(order.orderId)">删除</a>
+                </td>
+            </tr>
+        </table>
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">新增商品</h3>
+                    </div>
+                    <form id="forms" method="post">
+                        <table class="table table-bordered table-striped"  width="800px">
+                            <input class="form-control" name="orderId" style="display:none" readonly="readonly" v-model="list.orderId">
+                            <tr>
+                                <td>名称</td>
+                                <td><input class="form-control" type="text" name="orderName" placeholder="名称" v-model="list.orderName"></td>
+                            </tr>
+                            <tr>
+                                <td>价格</td>
+                                <td><input class="form-control" type="text" name="orderPrice" placeholder="价格" v-model="list.orderPrice"> </td>
+                            </tr>
+                            <tr>
+                                <td>时间</td>
+                                <td>
+                                    <input class="form-control" type="Date" name="createData" placeholder="价格" v-model="list.createData">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>支付方式</td>
+                                <td>
+                                    <input type="radio" name="orderZffs" value="1" v-model="list.orderZffs"/>微信
+                                    <input type="radio" name="orderZffs" value="2" v-model="list.orderZffs"/>支付宝
+                                    <input type="radio" name="orderZffs" value="3" v-model="list.orderZffs"/>线下支付
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" onclick="insert()">保存</button>
+                            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                orderList: "",
+                list: ""
+            }
+        })
+        //查询
+        $(function(){
+            chaxun();
+        })
+        function chaxun() {
+            $.ajax({
+                type:"post",
+                url:"/findList",
+                dataType:"json",
+                success: function(data) {
+                    vm.orderList = data;
+                },
+                error : function() {
+                    alert("系统错误，请联系管理员！");
+                }
+            })
+        }
+        //删除
+        function shan(id){
+            $.ajax({
+                url:"/deleteorder",
+                type:"post",
+                data:{orderId:id},
+                success: function(){
+                    alert("删除成功!!");
+                    chaxun();
+                }
+            })
+        }
+        //新增
+        function insert(){
+            $.ajax({
+                url:"/insertOrder",
+                type:"post",
+                data:$('#forms').serialize(),
+                success: function(data){
+                    alert(data)
+                    chaxun();
+                },
+                error(){
+                    alert(222);
+                }
+            });
+        }
+        //回显
+        function xiu(id){
+            if(id!=null && id!=''){
+                $.ajax({
+                    url:"/huixian",
+                    data:{orderId:id},
+                    type:"post",
+                    dataType:"json",
+                    success:function(data){
+                        vm.list = data;
+                    }
+                })
+            }
+        }
+    </script>
+</body>
+</html>
